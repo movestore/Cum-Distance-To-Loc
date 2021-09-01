@@ -6,6 +6,7 @@ library('geosphere')
 
 
 Sys.setenv(tz="GMT")
+options(scipen=999)
 #data <- readRDS("input_lowres_geese_74X.rds")
 
 
@@ -44,6 +45,8 @@ shinyModule <- function(input, output, session, data, posi_lon=NULL, posi_lat=NU
   current <- reactiveVal(data)
   
   timestamp_range <- range(timestamps(data))
+  timestamp_unit10 <- units(difftime(timestamp_range[1],seq(timestamp_range[1],timestamp_range[2],len=10)[2]))
+  timestamp_labs <- round(seq(timestamp_range[1],timestamp_range[2],len=10),unit=timestamp_unit10)
   dist_range <- reactive({
     range(distVincentyEllipsoid(coordinates(data),c(input$posi_lon,input$posi_lat)))
   })
@@ -60,12 +63,26 @@ shinyModule <- function(input, output, session, data, posi_lon=NULL, posi_lat=NU
     }
   })
   
+  csv_out <- foreach(datai = data.split, .combine = rbind) %do% {
+    idi <- rep(namesIndiv(datai),n.locs(datai))
+    cooi <- coordinates(datai)
+    timei <- timestamps(datai)
+    disti <- distVincentyEllipsoid(coordinates(datai),c(posi_lon,posi_lat))
+    data.frame("individual_local_identifier"=idi,"timestamp"=timei,"location_long"=cooi[,1],"location_lat"=cooi[,2],"distance_to_location (m)"=disti)
+  }
+  write.csv(csv_out,file=paste0(Sys.getenv(x = "APP_ARTIFACTS_DIR", "/tmp/"),"distance_table.csv"),row.names=FALSE) #this is the output only for the initial setting
+  
+  
 #output
   output$value1 <- renderText({ input$posi_lon})
   output$value2 <- renderText({ input$posi_lat})
   
   output$timeline <- renderPlot({
-    plot(timestamp_range,dist_range(),type="l",xlim=timestamp_range,ylim=dist_range(),xlab="time",ylab="distance to reference location (m)",col="white")
+    par(mar=c(12,4,4,2)+0.1,lab=c(10,6,20))
+    plot(timestamp_range,dist_range(),type="l",xlim=timestamp_range,ylim=dist_range(),xlab="time",ylab="distance to reference location (m)",col="white",axes=FALSE)
+    box()
+    axis(2)
+    axis(1,at=as.POSIXct(timestamp_labs),lab=as.character(timestamp_labs),las=2)
     for (i in seq(along=namen))
     {
       lines(dist_to_loc()[[i]]$timei,dist_to_loc()[[i]]$disti,col=cols[i],lwd=2)
