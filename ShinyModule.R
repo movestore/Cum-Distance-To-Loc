@@ -45,8 +45,8 @@ shinyModule <- function(input, output, session, data, posi_lon=NULL, posi_lat=NU
   current <- reactiveVal(data)
   
   timestamp_range <- range(timestamps(data))
-  timestamp_unit10 <- units(difftime(timestamp_range[1],seq(timestamp_range[1],timestamp_range[2],len=10)[2]))
-  timestamp_labs <- round(seq(timestamp_range[1],timestamp_range[2],len=10),unit=timestamp_unit10)
+  timestamp_unit30 <- units(difftime(timestamp_range[1],seq(timestamp_range[1],timestamp_range[2],len=30)[2]))
+  timestamp_labs <- round(seq(timestamp_range[1],timestamp_range[2],len=30),unit=timestamp_unit30)
   dist_range <- reactive({
     range(distVincentyEllipsoid(coordinates(data),c(input$posi_lon,input$posi_lat)))
   })

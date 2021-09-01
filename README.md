@@ -18,7 +18,7 @@ moveStack in Movebank format
 Shiny user interface (UI)
 
 ### Artefacts
-`distance_table.csv`: csv-file with Table of all individuals' distances to the specified location (incl. individual ID, timestamp, longitude, latitude)
+`distance_table.csv`: csv-file with Table of all individuals' distances to the specified location (incl. individual ID, timestamp, longitude, latitude). The file is only generated for the initial parameter settings.
 
 ### Parameters 
 `posi_lon`: longitude of the location to which the distance for each data position is calculated.
