@@ -79,10 +79,12 @@ shinyModule <- function(input, output, session, data, posi_lon=NULL, posi_lat=NU
   
   output$timeline <- renderPlot({
     par(mar=c(12,4,4,2)+0.1,lab=c(10,6,20))
-    plot(timestamp_range,dist_range(),type="l",xlim=timestamp_range,ylim=dist_range(),xlab="time",ylab="distance to reference location (m)",col="white",axes=FALSE)
+    plot(timestamp_range,dist_range(),type="l",xlim=timestamp_range,ylim=dist_range(),xlab="",ylab="distance to reference location (m)",col="white",axes=FALSE)
     box()
     axis(2)
     axis(1,at=as.POSIXct(timestamp_labs),lab=as.character(timestamp_labs),las=2)
+    if (timestamp_unit30 %in% c("secs","mins","hours")) mtext("time", side=1, line=10)
+    if (timestamp_unit30 %in% c("days","weeks")) mtext("time",side=1, line=7)
     for (i in seq(along=namen))
     {
       lines(dist_to_loc()[[i]]$timei,dist_to_loc()[[i]]$disti,col=cols[i],lwd=2)
