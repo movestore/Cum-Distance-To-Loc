@@ -5,7 +5,7 @@ library('fields')
 library('geosphere')
 
 
-Sys.setenv(tz="GMT")
+Sys.setenv(tz="UTC")
 options(scipen=999)
 #data <- readRDS("input_lowres_geese_74X.rds")
 
