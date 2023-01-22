@@ -10,9 +10,10 @@ Sys.setenv(tz="UTC")
 options(scipen=999)
 #data <- readRDS("input_lowres_geese_74X.rds")
 
-## is this ok? at first it will calculate the distance to coords (0,0).... If it should be a prefixed coorinate, not sure if a shiny app is needed....
-## Go! button can be put in better place (ie alligned with the lat/long boxes)
 ## spinner option can be modified to different shapes and colors
+## zoom in to plot ==> not finished 
+## download plot ==> adjust height/width
+## check if one can build new lot while old one is creating and not finished ==> yes
 
 shinyModuleUserInterface <- function(id, label) {
   ns <- NS(id)
@@ -21,14 +22,12 @@ shinyModuleUserInterface <- function(id, label) {
     titlePanel("Distance to Location over Time"),
     fluidRow(
       column(3, numericInput(ns("posi_lon"), "Longitude of Reference Location:", value=0, min = -180, max = 180,step=0.00001)),
-    # verbatimTextOutput("value1"),
-    
-    column(3, numericInput(ns("posi_lat"), "Latitude of Reference Location:", value=0, min = -90, max = 90,step=0.00001)),
-    # verbatimTextOutput("value2"),
-
-    column(1, actionButton(ns("GoButton"), label="Go!"))
+      column(3, numericInput(ns("posi_lat"), "Latitude of Reference Location:", value=0, min = -90, max = 90,step=0.00001)),
+      column(1, actionButton(ns("GoButton"), label="Update!", icon=icon("rotate")))
     ),
-  withSpinner(plotOutput(ns("timeline"),height="80vh"))#, type=5, size=1.5,color= "#28b78d") 
+    withSpinner(plotOutput(ns("timeline"), height="80vh")),
+    # withSpinner(plotOutput(ns("timeline"),dblclick = ns("plot_dblclick"), brush = brushOpts(id =ns("plot_brush"),resetOnNew = TRUE), height="80vh")), ## still have to add zoom in plot axis
+    downloadButton(ns('savePlot'), 'Save Plot')
   )
 }
 
@@ -60,25 +59,6 @@ shinyModule <- function(input, output, session, data) {
     }
   })
   
- #  observe({
-  # csv_out <- # reactive({
-  #   foreach(datai = data.split, .combine = rbind) %do% {
-  #   idi <- rep(namesIndiv(datai),n.locs(datai))
-  #   cooi <- coordinates(datai)
-  #   timei <- timestamps(datai)
-  #   disti <- distVincentyEllipsoid(coordinates(datai),c(userCorrds$posi_lon,userCorrds$posi_lat))
-  #   data.frame("individual_local_identifier"=idi,"timestamp"=timei,"location_long"=cooi[,1],"location_lat"=cooi[,2],"distance_to_location (m)"=disti)
-  #   }
- # # })
- # 
- #    write.csv(csv_out,file=paste0(Sys.getenv(x = "APP_ARTIFACTS_DIR", "/tmp/"),"distance_table.csv"),row.names=FALSE) #this is the output only for the initial setting
- #  })
-
-  
-#output
-  # output$value1 <- renderText({ input$posi_lon})
-  # output$value2 <- renderText({ input$posi_lat})
-
   output$timeline <- renderPlot({
     par(mar=c(12,4,4,2)+0.1,lab=c(10,6,20))
     plot(timestamp_range,dist_range(),type="l",xlim=timestamp_range,ylim=dist_range(),xlab="",ylab="distance to reference location (m)",col="white",axes=FALSE)
@@ -92,16 +72,28 @@ shinyModule <- function(input, output, session, data) {
       lines(dist_to_loc()[[i]]$timei,dist_to_loc()[[i]]$disti,col=cols[i],lwd=2)
       legend("topright",legend,namen,fill=cols)
     }
-    csv_out <- foreach(datai = data.split, .combine = rbind) %do% {
-        idi <- rep(namesIndiv(datai),n.locs(datai))
-        cooi <- coordinates(datai)
-        timei <- timestamps(datai)
-        disti <- distVincentyEllipsoid(coordinates(datai),c(userCorrds$posi_lon,userCorrds$posi_lat))
-        data.frame("individual_local_identifier"=idi,"timestamp"=timei,"location_long"=cooi[,1],"location_lat"=cooi[,2],"distance_to_location (m)"=disti)
+    sv_plot <- recordPlot()
+    
+    ### save plot ###
+    output$savePlot <- downloadHandler(
+      filename = "distance_plot.png",
+      content = function(file) {
+        png(file, width = 960, height = 480)
+        replayPlot(sv_plot)
+        dev.off()
       }
-    write.csv(csv_out,file=appArtifactPath("_distance_table.csv"),row.names=FALSE)
+    )
+    ### save table ###
+    csv_out <- foreach(datai = data.split, .combine = rbind) %do% {
+      idi <- rep(namesIndiv(datai),n.locs(datai))
+      cooi <- coordinates(datai)
+      timei <- timestamps(datai)
+      disti <- distVincentyEllipsoid(coordinates(datai),c(userCorrds$posi_lon,userCorrds$posi_lat))
+      data.frame("individual_local_identifier"=idi,"timestamp"=timei,"location_long"=cooi[,1],"location_lat"=cooi[,2],"distance_to_location (m)"=disti)
+    }
+    write.csv(csv_out,file=appArtifactPath("distance_table.csv"),row.names=FALSE)
   })
-
+  
   return(reactive({ current() })) 
 }
 

@@ -2,7 +2,7 @@ library(jsonlite)
 source("logger.R")
 source("ShinyModule.R")
 
-inputFileName = "Test_output_Aug2021.rds"
+  inputFileName = "data/raw/input4_goat.rds"
 outputFileName = "output.rds"
 
 if(file.exists("configuration.json")) {
