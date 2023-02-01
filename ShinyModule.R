@@ -13,7 +13,6 @@ options(scipen=999)
 ## spinner option can be modified to different shapes and colors
 ## zoom in to plot ==> not finished 
 ## download plot ==> adjust height/width
-## check if one can build new lot while old one is creating and not finished ==> yes
 
 shinyModuleUserInterface <- function(id, label) {
   ns <- NS(id)
@@ -23,11 +22,13 @@ shinyModuleUserInterface <- function(id, label) {
     fluidRow(
       column(3, numericInput(ns("posi_lon"), "Longitude of Reference Location:", value=0, min = -180, max = 180,step=0.00001)),
       column(3, numericInput(ns("posi_lat"), "Latitude of Reference Location:", value=0, min = -90, max = 90,step=0.00001)),
-      column(1, actionButton(ns("GoButton"), label="Update!", icon=icon("rotate")))
+      column(2, actionButton(ns("GoButton"), label="Update!", icon=icon("rotate")),style = 'top: 25px;position:relative;'),
+      column(2, downloadButton(ns('savePlot'), 'Save Plot'),style = 'top: 25px;position:relative;'),
+      
     ),
-    withSpinner(plotOutput(ns("timeline"), height="80vh")),
+    withSpinner(plotOutput(ns("timeline"), height="80vh"))
     # withSpinner(plotOutput(ns("timeline"),dblclick = ns("plot_dblclick"), brush = brushOpts(id =ns("plot_brush"),resetOnNew = TRUE), height="80vh")), ## still have to add zoom in plot axis
-    downloadButton(ns('savePlot'), 'Save Plot')
+    
   )
 }
 
