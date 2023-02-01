@@ -1,20 +1,5 @@
 {
-  "settings": [
-    {
-      "id": "posi_lon",
-      "name": "Longitude of reference position",
-      "description": "Select the longitude of your reference position. The distance to this location will be calculated for all of your data points. Defaults to `0`.",
-      "defaultValue": 0,
-      "type": "DOUBLE"
-    },
-    {
-	  "id": "posi_lat",
-      "name": "Latitude of reference position",
-      "description": "Select the latitude of your reference position. The distance to this location will be calculated for all of your data points. Defaults to `0`",
-      "defaultValue": 0,
-      "type": "DOUBLE"
-	}
-  ],
+  "settings": [],
   "dependencies": {
     "R": [
       {
@@ -31,6 +16,9 @@
       },
 	  {
 		"name": "geosphere"
+      },
+	  {
+		"name": "shinycssloaders"
       }
     ]
   },
