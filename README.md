@@ -1,4 +1,4 @@
-# Distance to Location
+# Distance to a Location
 
 MoveApps
 
@@ -20,7 +20,7 @@ Shiny user interface (UI)
 ### Artefacts
 `distance_table.csv`: csv-file with Table of all individuals' distances to the specified location (incl. individual ID, timestamp, longitude, latitude). The file is only generated for the initial parameter settings.
 
-### Parameters 
+### Settings 
 `Longitude of Reference Location`: longitude of the location to which the distance for each data position is calculated.
 
 `Latitude of Reference Location`: latitude of the position to which the distance for each data position is calculated.
@@ -28,9 +28,9 @@ Shiny user interface (UI)
 `Update!`: click on this button to update the calculation after changing the coordinates of the reference position.
 
 ### Null or error handling:
-**Parameter `Longitude of Reference Location`:** This parameter defaults to 0, which is the Prime Meridian. It can be interactively changed in the UI.
+**Setting `Longitude of Reference Location`:** This parameter defaults to 0, which is the Prime Meridian. It can be interactively changed in the UI.
 
-**Parameter `Latitude of Reference Location`:** This parameter defaults to 0, which is the Equator. It can be interactively changed in the UI.
+**Setting `Latitude of Reference Location`:** This parameter defaults to 0, which is the Equator. It can be interactively changed in the UI.
 
 **Data:** The data are not manipulated in this App, but interactively explored. So that a possible Workflow can be continued after this App, the input data set is returned.
 
